@@ -123,7 +123,7 @@ exports.start = function () {
         launch();
     }
     
-    var launch = function() {
+    function launch() {
         server = spawn(config.options.command, config.args, config.options);
         server.stdout.setEncoding('utf8');
         server.stderr.setEncoding('utf8');
