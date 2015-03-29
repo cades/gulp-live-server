@@ -113,24 +113,28 @@ exports.start = function () {
     if (server) { // server already running
         debug(info('kill server'));
         server.kill('SIGKILL');
-        //server.removeListener('exit', callback.serverExit);
+        server.once('exit', launch);
         server = undefined;
     } else {
         if(config.livereload){
             lr = tinylr(config.livereload);
             lr.listen(config.livereload.port, callback.lrServerReady);
         }
+        launch();
     }
-    server = spawn(config.options.command, config.args, config.options);
-    server.stdout.setEncoding('utf8');
-    server.stderr.setEncoding('utf8');
+    
+    var launch = function() {
+        server = spawn(config.options.command, config.args, config.options);
+        server.stdout.setEncoding('utf8');
+        server.stderr.setEncoding('utf8');
 
-    server.stdout.on('data', function(code, sig){
-        callback.serverLog(code, sig);
-        deferred.resolve(code);
-    });
-    server.stderr.on('data', callback.serverError);
-    server.once('exit', callback.serverExit);
+        server.stdout.on('data', function(code, sig){
+            callback.serverLog(code, sig);
+            deferred.resolve(code);
+        });
+        server.stderr.on('data', callback.serverError);
+        server.once('exit', callback.serverExit);
+    }
 
     process.listeners('exit') || process.once('exit', callback.processExit);
 
