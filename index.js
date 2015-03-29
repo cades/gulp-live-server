@@ -59,7 +59,8 @@ module.exports = exports = (function() {
         },
         livereload: {
             port: 35729
-        }
+        },
+        command: 'node'
     };
     defaults.options.env = process.env;
     defaults.options.env.server_ENV = 'development';
@@ -120,7 +121,7 @@ exports.start = function () {
             lr.listen(config.livereload.port, callback.lrServerReady);
         }
     }
-    server = spawn('node', config.args, config.options);
+    server = spawn(config.options.command, config.args, config.options);
     server.stdout.setEncoding('utf8');
     server.stderr.setEncoding('utf8');
 
